@@ -117,6 +117,8 @@ int main(void)
 		  iniciou = true;
 
 
+
+
 	  }
 
 	  if (BotaoLe == 0)
