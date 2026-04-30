@@ -24,6 +24,7 @@
 /* USER CODE BEGIN Includes */
 #include "st7735\st7735.h"
 #include <stdlib.h>
+#include <stdio.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -46,6 +47,8 @@
 SPI_HandleTypeDef hspi1;
 
 /* USER CODE BEGIN PV */
+int alunos = 0;
+bool configurandoAlunos =false;
 
 /* USER CODE END PV */
 
@@ -59,10 +62,6 @@ static void MX_SPI1_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
-void inicio(void);
-void digitarsenha(void);
-void limpar(void);
 
 /* USER CODE END 0 */
 
@@ -98,6 +97,10 @@ int main(void)
   /* USER CODE BEGIN 2 */
   ST7735_Init();
   srand(HAL_GetTick());
+  void inicio(void);
+  void digitarsenha(void);
+  void limpar(void);
+  void configurarAlunos(void);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -200,12 +203,17 @@ int main(void)
 			  if (digitado == senha)
 			  {
 				  ST7735_WriteString(0,0,"ACESSO LIBERADO", Font_7x10, GREEN, BLACK);
+				  if (configurandoAlunos == false){
+				  			  configurarAlunos();
+				  		  }
 			  }
 		  else
 		  {
 			  ST7735_WriteString(0,0,"SENHA ERRADA", Font_7x10, RED, BLACK);
 		  }
 		  }
+
+
 
 
 }
@@ -349,6 +357,34 @@ static void MX_GPIO_Init(void)
  void limpar(void)
  {
 	 ST7735_FillScreen(BLACK);
+
+ }
+
+ void configurarAlunos(void)
+ {
+	 char textoAlunos[20];
+
+	 ST7735_FillScreen(BLACK);
+	 ST7735_WriteString(0,0,"Digite a quantidade de alunos ", Font_7x10, WHITE, RED);
+
+	 while(configurandoAlunos == false){
+
+		 if (BotaoLe1 == 0){
+			 alunos++;
+			 HAL_Delay(200);
+			 ST7735_FillScreen(BLACK);
+			 sprintf(textoAlunos, " %d", alunos);
+			 ST7735_WriteString(0,0,"Alunos: ", Font_7x10, WHITE, RED);
+			 ST7735_WriteString(8,0,textoAlunos, Font_7x10, WHITE, RED);
+
+		 }
+
+		 if (BotaoLe == 0){
+			 HAL_Delay(200);
+			 configurandoAlunos = true;
+		 }
+	 }
+
 
  }
 
