@@ -104,7 +104,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   bool iniciou = false;
   bool senhaGerada = false;
-  bool digitando = false;
+  bool digitandoSenha = false;
   int senha, cliques = 0, digitado = 0, digitos = 0;
   uint32_t ultimoClique = 0;
 
@@ -121,11 +121,12 @@ int main(void)
 	      {
 		  ST7735_FillScreen(BLACK);
 		  digitarsenha();
+		  digitandoSenha = true;
 
 
 		  while(BotaoLe == 0)
-		  {
-		  }
+		  	  {
+		  	  }
 	      }
 
 	  if(senhaGerada == false)
@@ -135,7 +136,7 @@ int main(void)
 	  }
 
 	  if (BotaoLe1 == 0 && digitandoSenha == true){
-
+		  char *digitoTexto = "";
 		  cliques++;
 		  ultimoClique = HAL_GetTick();
 
@@ -144,14 +145,50 @@ int main(void)
 		  {
 
 		  }
-	  }
+		  switch(cliques){
+		      case 1:
+		          digitoTexto = "1";
+		          break;
+		      case 2:
+		          digitoTexto = "2";
+		          break;
+		      case 3:
+		          digitoTexto = "3";
+		          break;
+		      case 4:
+		          digitoTexto = "4";
+		          break;
+		      case 5:
+		          digitoTexto = "5";
+		          break;
+		      case 6:
+		          digitoTexto = "6";
+		          break;
+		      case 7:
+		          digitoTexto = "7";
+		          break;
+		      case 8:
+		          digitoTexto = "8";
+		          break;
+		      case 9:
+		          digitoTexto = "9";
+		          break;
+		      case 10 :
+		    	  digitoTexto = "0";
+		    	  break;
+		      default:
+		          cliques = 0;
+		          break;
+		  }
+
+		  ST7735_WriteString(digitos * 10, 20, digitoTexto, Font_7x10, WHITE, BLACK);
+
+		  }
+
+
 	  if (cliques > 0 && (HAL_GetTick() - ultimoClique) > 1000){
 		  digitado = digitado * 10 + cliques;
 		  digitos++;
-		  char texto[5];
-		  sprintf(texto, "%d", cliques);
-
-		  ST7735_WriteString(0, digitos*10, texto, Font_7x10, WHITE, BLACK);
 
 		  cliques = 0;
 
@@ -159,17 +196,17 @@ int main(void)
 		  {
 			  ST7735_FillScreen(BLACK);
 			  if (digitado == senha)
-		  {
-			  ST7735_WriteString(0,0,"ACESSO LIBERADO", Font_7x10, GREEN, BLACK);
-		  }
+			  {
+				  ST7735_WriteString(0,0,"ACESSO LIBERADO", Font_7x10, GREEN, BLACK);
+			  }
 		  else
 		  {
 			  ST7735_WriteString(0,0,"SENHA ERRADA", Font_7x10, RED, BLACK);
 		  }
 		  }
 
-	  }
 
+}
 
 
 
