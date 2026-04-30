@@ -115,6 +115,8 @@ int main(void)
 		  ST7735_FillScreen(BLACK);
 		  inicio();
 		  iniciou = true;
+
+
 	  }
 
 	  if (BotaoLe == 0)
