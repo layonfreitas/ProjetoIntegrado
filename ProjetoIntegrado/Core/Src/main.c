@@ -36,6 +36,8 @@
 /* USER CODE BEGIN PD */
 #define BotaoLe  HAL_GPIO_ReadPin(BOTAO9_GPIO_Port, BOTAO9_Pin)
 #define BotaoLe1 HAL_GPIO_ReadPin(BOTAO10_GPIO_Port, BOTAO10_Pin)
+#define BotaoLe2 HAL_GPIO_ReadPin(BOTAO11_GPIO_Port, BOTAO11_Pin)
+#define limpar ST7735_FillScreen(BLACK);
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -57,7 +59,9 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_SPI1_Init(void);
 /* USER CODE BEGIN PFP */
-
+void inicio(void);
+void digitarsenha(void);
+void configurarAlunos(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -72,6 +76,13 @@ static void MX_SPI1_Init(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
+
+	  bool iniciou = false;
+	  bool senhaGerada = false;
+	  bool digitandoSenha = false;
+	  bool senhaCorreta = false;
+	  int senha, cliques = 0, digitado = 0, digitos = 0;
+	  uint32_t ultimoClique = 0;
 
   /* USER CODE END 1 */
 
@@ -96,44 +107,31 @@ int main(void)
   MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
   ST7735_Init();
-  srand(HAL_GetTick());
-  void inicio(void);
-  void digitarsenha(void);
-  void limpar(void);
-  void configurarAlunos(void);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  bool iniciou = false;
-  bool senhaGerada = false;
-  bool digitandoSenha = false;
-  int senha, cliques = 0, digitado = 0, digitos = 0;
-  uint32_t ultimoClique = 0;
-
   while (1)
   {
 	  if (iniciou == false)
 	  {
-		  ST7735_FillScreen(BLACK);
+		  limpar;
 		  inicio();
 		  iniciou = true;
-
-
 	  }
 
 	  if (BotaoLe == 0)
 	      {
-		  ST7735_FillScreen(BLACK);
+		  limpar;
 		  digitarsenha();
 		  digitandoSenha = true;
-
+		  srand(HAL_GetTick());
 
 		  while(BotaoLe == 0)
 		  	  {
 		  	  }
 	      }
-
 	  if(senhaGerada == false)
 	  {
 		  senha = (rand() % 900) + 100;
@@ -203,14 +201,22 @@ int main(void)
 			  if (digitado == senha)
 			  {
 				  ST7735_WriteString(0,0,"ACESSO LIBERADO", Font_7x10, GREEN, BLACK);
-				  if (configurandoAlunos == false){
-				  			  configurarAlunos();
-				  		  }
+				  senhaCorreta = true;
+				  digitandoSenha = false;
+
 			  }
-		  else
-		  {
-			  ST7735_WriteString(0,0,"SENHA ERRADA", Font_7x10, RED, BLACK);
+			  else
+			  {
+				  ST7735_WriteString(0,0,"SENHA INCORRETA, TENTE NOVAMENTE", Font_7x10, RED, BLACK);
+				  digitado = 0;
+				  digitos = 0;
+			  }
 		  }
+
+		  if (senhaCorreta == true)
+		  {
+			  configurarAlunos();
+
 		  }
 
 
@@ -333,8 +339,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : BOTAO9_Pin BOTAO10_Pin */
-  GPIO_InitStruct.Pin = BOTAO9_Pin|BOTAO10_Pin;
+  /*Configure GPIO pins : BOTAO9_Pin BOTAO10_Pin BOTAO11_Pin */
+  GPIO_InitStruct.Pin = BOTAO9_Pin|BOTAO10_Pin|BOTAO11_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
@@ -342,8 +348,8 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
- void inicio(void){
-
+ void inicio(void)
+ {
 		ST7735_WriteString(0,0,"Pressione o botao para o comeco da aula ", Font_7x10, WHITE, RED);
 
  }
@@ -354,36 +360,45 @@ static void MX_GPIO_Init(void)
 	 ST7735_WriteString(0,0,"Bem vindo, Digite a sua senha: ", Font_7x10, WHITE, RED);
  }
 
- void limpar(void)
- {
-	 ST7735_FillScreen(BLACK);
-
- }
 
  void configurarAlunos(void)
  {
 	 char textoAlunos[20];
 
-	 ST7735_FillScreen(BLACK);
+	 limpar;
 	 ST7735_WriteString(0,0,"Digite a quantidade de alunos ", Font_7x10, WHITE, RED);
 
 	 while(configurandoAlunos == false){
 
-		 if (BotaoLe1 == 0){
+		 if (BotaoLe1 == 0)
+		 {
 			 alunos++;
 			 HAL_Delay(200);
-			 ST7735_FillScreen(BLACK);
-			 sprintf(textoAlunos, " %d", alunos);
-			 ST7735_WriteString(0,0,"Alunos: ", Font_7x10, WHITE, RED);
-			 ST7735_WriteString(8,0,textoAlunos, Font_7x10, WHITE, RED);
+
 
 		 }
 
-		 if (BotaoLe == 0){
+		 else if (BotaoLe2 == 0)
+		 {
+			 alunos--;
+			 HAL_Delay(200);
+		 }
+
+		 else if (BotaoLe == 0)
+		 {
 			 HAL_Delay(200);
 			 configurandoAlunos = true;
 		 }
+
+		 sprintf(textoAlunos, " %d", alunos);
+		 ST7735_WriteString(0,20,"Alunos: ", Font_7x10, WHITE, RED);
+		 ST7735_WriteString(57,20,textoAlunos, Font_7x10, WHITE, RED);
+
 	 }
+
+	 limpar;
+	 ST7735_WriteString(0,0,"O numero max de alunos é: ", Font_7x10, WHITE, RED);
+	 ST7735_WriteString(10,55,textoAlunos, Font_7x10, WHITE, RED);
 
 
  }
