@@ -37,7 +37,7 @@
 #define BotaoLe  HAL_GPIO_ReadPin(BOTAO9_GPIO_Port, BOTAO9_Pin)
 #define BotaoLe1 HAL_GPIO_ReadPin(BOTAO10_GPIO_Port, BOTAO10_Pin)
 #define BotaoLe2 HAL_GPIO_ReadPin(BOTAO11_GPIO_Port, BOTAO11_Pin)
-#define limpar ST7735_FillScreen(BLACK);
+#define limpar ST7735_FillScreen(BLACK)
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -49,7 +49,7 @@
 SPI_HandleTypeDef hspi1;
 
 /* USER CODE BEGIN PV */
-int alunos = 0;
+int alunosMax = 0, alunos = 0;
 bool configurandoAlunos =false;
 
 /* USER CODE END PV */
@@ -62,6 +62,9 @@ static void MX_SPI1_Init(void);
 void inicio(void);
 void digitarsenha(void);
 void configurarAlunos(void);
+void menu(void);
+void entrada(void);
+
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -107,6 +110,7 @@ int main(void)
   MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
   ST7735_Init();
+  ST7735_InvertColors(false);
 
   /* USER CODE END 2 */
 
@@ -121,22 +125,20 @@ int main(void)
 		  iniciou = true;
 	  }
 
-	  if (BotaoLe == 0)
+	  if (BotaoLe == 0 && senhaGerada == false)
 	      {
 		  limpar;
 		  digitarsenha();
 		  digitandoSenha = true;
-		  srand(HAL_GetTick());
+		//  srand(HAL_GetTick());
+		  senha = (rand() % 900) + 100;
+		  senhaGerada = true;
+
 
 		  while(BotaoLe == 0)
 		  	  {
 		  	  }
 	      }
-	  if(senhaGerada == false)
-	  {
-		  senha = (rand() % 900) + 100;
-		  senhaGerada = true;
-	  }
 
 	  if (BotaoLe1 == 0 && digitandoSenha == true){
 		  char *digitoTexto = "";
@@ -197,12 +199,13 @@ int main(void)
 
 		  if (digitos == 3)
 		  {
-			  ST7735_FillScreen(BLACK);
+			  limpar;
 			  if (digitado == senha)
 			  {
 				  ST7735_WriteString(0,0,"ACESSO LIBERADO", Font_7x10, GREEN, BLACK);
 				  senhaCorreta = true;
 				  digitandoSenha = false;
+				  HAL_Delay(500);
 
 			  }
 			  else
@@ -350,14 +353,14 @@ static void MX_GPIO_Init(void)
 /* USER CODE BEGIN 4 */
  void inicio(void)
  {
-		ST7735_WriteString(0,0,"Pressione o botao para o comeco da aula ", Font_7x10, WHITE, RED);
+		ST7735_WriteString(0,0,"Pressione o botao para o comeco da aula ", Font_7x10, WHITE, BLACK);
 
  }
 
  void digitarsenha(void)
  {
 
-	 ST7735_WriteString(0,0,"Bem vindo, Digite a sua senha: ", Font_7x10, WHITE, RED);
+	 ST7735_WriteString(0,0,"Bem vindo, Digite a sua senha: ", Font_7x10, WHITE, BLACK);
  }
 
 
@@ -366,41 +369,70 @@ static void MX_GPIO_Init(void)
 	 char textoAlunos[20];
 
 	 limpar;
-	 ST7735_WriteString(0,0,"Digite a quantidade de alunos ", Font_7x10, WHITE, RED);
+	 ST7735_WriteString(0,0,"Digite a quantidade de alunos ", Font_7x10, WHITE, BLACK);
 
 	 while(configurandoAlunos == false){
 
 		 if (BotaoLe1 == 0)
 		 {
-			 alunos++;
+			 alunosMax++;
 			 HAL_Delay(200);
 
 
 		 }
 
-		 else if (BotaoLe2 == 0)
+		 else if (BotaoLe2 == 0 && alunos > 0)
 		 {
-			 alunos--;
+			 alunosMax--;
 			 HAL_Delay(200);
 		 }
 
 		 else if (BotaoLe == 0)
 		 {
-			 HAL_Delay(200);
 			 configurandoAlunos = true;
+			 HAL_Delay(200);
 		 }
 
-		 sprintf(textoAlunos, " %d", alunos);
-		 ST7735_WriteString(0,20,"Alunos: ", Font_7x10, WHITE, RED);
-		 ST7735_WriteString(57,20,textoAlunos, Font_7x10, WHITE, RED);
+		 sprintf(textoAlunos, "%-2d", alunos);
+		 ST7735_WriteString(0,20,"Alunos: ", Font_7x10, WHITE, BLACK);
+		 ST7735_WriteString(57,20,textoAlunos, Font_7x10, WHITE, BLACK);
 
 	 }
 
 	 limpar;
-	 ST7735_WriteString(0,0,"O numero max de alunos é: ", Font_7x10, WHITE, RED);
-	 ST7735_WriteString(10,55,textoAlunos, Font_7x10, WHITE, RED);
+	 ST7735_WriteString(0,0,"O numero max de alunos: ", Font_7x10, WHITE, BLACK);
+	 ST7735_WriteString(14,10,textoAlunos, Font_7x10, WHITE, BLACK);
 
 
+ }
+ void menu(void)
+ {
+	 while(true){
+		 if(BotaoLe == 0)
+		 {
+			 entrada();
+		 }
+		 if(BotaoLe1 == 0){
+
+		 }
+		 if(BotaoLe2 == 0){
+
+		 }
+	 }
+ }
+ void entrada(void)
+ {
+	 bool entrandoAlunos = true;
+	 while(entrandoAlunos){
+		 if(BotaoLe == 0){
+			 alunos++;
+			 HAL_Delay(200);
+		 }
+		 if(BotaoLe1 == 0){
+			 entrandoAlunos = false;
+		 }
+
+	 }
  }
 
 /* USER CODE END 4 */
