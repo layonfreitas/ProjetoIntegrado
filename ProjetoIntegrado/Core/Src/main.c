@@ -130,7 +130,7 @@ int main(void)
 		  limpar;
 		  digitarsenha();
 		  digitandoSenha = true;
-		//  srand(HAL_GetTick());
+		 srand(HAL_GetTick());
 		  senha = (rand() % 900) + 100;
 		  senhaGerada = true;
 
@@ -407,15 +407,23 @@ static void MX_GPIO_Init(void)
  }
  void menu(void)
  {
+	 int alunosFora = 0;
+	 int alunosDentro = 0;
 	 while(true){
 		 if(BotaoLe == 0)
 		 {
 			 entrada();
+			 alunosDentro = alunos;
+
 		 }
 		 if(BotaoLe1 == 0){
 
+			 if (alunosFora < 3){
+				 alunosFora ++;
+			 }
 		 }
 		 if(BotaoLe2 == 0){
+
 
 		 }
 	 }
