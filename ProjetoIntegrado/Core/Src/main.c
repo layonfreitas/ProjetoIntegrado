@@ -393,7 +393,7 @@ static void MX_GPIO_Init(void)
 			 HAL_Delay(200);
 		 }
 
-		 sprintf(textoAlunos, "%-2d", alunos);
+		 sprintf(textoAlunos, "%-2d", alunosMax);
 		 ST7735_WriteString(0,20,"Alunos: ", Font_7x10, WHITE, BLACK);
 		 ST7735_WriteString(57,20,textoAlunos, Font_7x10, WHITE, BLACK);
 
@@ -420,10 +420,14 @@ static void MX_GPIO_Init(void)
 
 			 if (alunosFora < 3){
 				 alunosFora ++;
+				 alunosDentro --;
 			 }
 		 }
 		 if(BotaoLe2 == 0){
-
+			 if (alunosFora < 0){
+				 alunosDentro ++;
+				 alunosFora --;
+			 }
 
 		 }
 	 }
@@ -431,13 +435,21 @@ static void MX_GPIO_Init(void)
  void entrada(void)
  {
 	 bool entrandoAlunos = true;
+	 int matricula = 1000;
+	 char matriculaAluno[4];
+
 	 while(entrandoAlunos){
 		 if(BotaoLe == 0){
-			 alunos++;
 			 HAL_Delay(200);
+			 matricula++;
+			 alunos++;
+			 sprintf(matriculaAlunos, "%d", matricula );
+
 		 }
 		 if(BotaoLe1 == 0){
 			 entrandoAlunos = false;
+			 ST7735_WriteString(0,0,"Entrou: ", Font_7x10, WHITE, BLACK);
+			 ST7735_WriteString(56,0,matriculaAlunos, Font_7x10, WHITE, BLACK);
 		 }
 
 	 }
