@@ -70,6 +70,8 @@ void Error_Handler(void);
 #define BOTAO10_GPIO_Port GPIOA
 #define BOTAO11_Pin GPIO_PIN_11
 #define BOTAO11_GPIO_Port GPIOA
+#define BOTAO12_Pin GPIO_PIN_12
+#define BOTAO12_GPIO_Port GPIOA
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
