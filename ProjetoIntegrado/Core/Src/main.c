@@ -219,8 +219,11 @@ int main(void)
 		  if (senhaCorreta == true)
 		  {
 			  configurarAlunos();
+			  menu();
 
 		  }
+
+
 
 
 
@@ -381,14 +384,15 @@ static void MX_GPIO_Init(void)
 
 		 }
 
-		 else if (BotaoLe2 == 0 && alunos > 0)
+		 else if (BotaoLe2 == 0 && alunosMax > 0)
 		 {
 			 alunosMax--;
 			 HAL_Delay(200);
 		 }
 
-		 else if (BotaoLe == 0)
+		 else if (BotaoLe == 0 && alunosMax > 0)
 		 {
+
 			 configurandoAlunos = true;
 			 HAL_Delay(200);
 		 }
@@ -436,20 +440,20 @@ static void MX_GPIO_Init(void)
  {
 	 bool entrandoAlunos = true;
 	 int matricula = 1000;
-	 char matriculaAluno[4];
+	 char matriculaAluno[5];
 
 	 while(entrandoAlunos){
 		 if(BotaoLe == 0){
 			 HAL_Delay(200);
 			 matricula++;
 			 alunos++;
-			 sprintf(matriculaAlunos, "%d", matricula );
+			 sprintf(matriculaAluno, "%d", matricula);
 
 		 }
 		 if(BotaoLe1 == 0){
 			 entrandoAlunos = false;
 			 ST7735_WriteString(0,0,"Entrou: ", Font_7x10, WHITE, BLACK);
-			 ST7735_WriteString(56,0,matriculaAlunos, Font_7x10, WHITE, BLACK);
+			 ST7735_WriteString(56,0,matriculaAluno, Font_7x10, WHITE, BLACK);
 		 }
 
 	 }
