@@ -199,7 +199,7 @@ int main(void)
 			  limpar;
 			  if (digitado == senha)
 			  {
-				  ST7735_WriteString(0,0,"ACESSO LIBERADO", Font_7x10, GREEN, BLACK);
+				  ST7735_WriteString(0,0,"ACESSO LIBERADO", Font_16x26, GREEN, BLACK);
 				  senhaCorreta = true;
 				  digitandoSenha = false;
 				  HAL_Delay(500);
@@ -207,7 +207,7 @@ int main(void)
 			  }
 			  else
 			  {
-				  ST7735_WriteString(0,0,"SENHA INCORRETA, TENTE NOVAMENTE", Font_7x10, RED, BLACK);
+				  ST7735_WriteString(0,0,"SENHA INCORRETA, TENTE NOVAMENTE", Font_11x18, RED, BLACK);
 				  digitado = 0;
 				  digitos = 0;
 			  }
