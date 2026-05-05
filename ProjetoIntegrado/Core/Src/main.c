@@ -50,7 +50,9 @@ SPI_HandleTypeDef hspi1;
 
 /* USER CODE BEGIN PV */
 int alunosMax = 0, alunos = 0;
+int matricula = 1000;
 bool configurandoAlunos =false;
+char AlunosFora[4] = "0" , AlunosDentro[4] =  "0", AlunosMax[4] =  "0";
 
 /* USER CODE END PV */
 
@@ -130,14 +132,9 @@ int main(void)
 		  limpar;
 		  digitarsenha();
 		  digitandoSenha = true;
-		 srand(HAL_GetTick());
+		  srand(HAL_GetTick());
 		  senha = (rand() % 900) + 100;
 		  senhaGerada = true;
-
-
-		  while(BotaoLe == 0)
-		  	  {
-		  	  }
 	      }
 
 	  if (BotaoLe1 == 0 && digitandoSenha == true){
@@ -222,8 +219,6 @@ int main(void)
 			  menu();
 
 		  }
-
-
 
 
 
@@ -411,26 +406,57 @@ static void MX_GPIO_Init(void)
  }
  void menu(void)
  {
+	 limpar;
 	 int alunosFora = 0;
 	 int alunosDentro = 0;
+	 sprintf(AlunosMax, "%-2d", alunosMax);
+
+	 ST7735_WriteString(0,0,"Max de alunos: ", Font_7x10, WHITE, BLACK);
+	 ST7735_WriteString(99,0, AlunosMax, Font_7x10, WHITE, BLACK);
+	 ST7735_WriteString(0,10,"Alunos na sala: ", Font_7x10, WHITE, BLACK);
+	 ST7735_WriteString(0,20,"Alunos fora: ", Font_7x10, WHITE, BLACK);
+
 	 while(true){
 		 if(BotaoLe == 0)
 		 {
 			 entrada();
 			 alunosDentro = alunos;
+			 sprintf(AlunosDentro, "%-2d", alunosDentro);
+			 HAL_Delay(200);
+			 ST7735_WriteString(107,10,AlunosDentro, Font_7x10, WHITE, BLACK);
+			 while(BotaoLe == 0){
+
+			 }
 
 		 }
 		 if(BotaoLe1 == 0){
 
-			 if (alunosFora < 3){
+			 if (alunosFora < 3 && alunosDentro > 0){
 				 alunosFora ++;
 				 alunosDentro --;
+				 sprintf(AlunosDentro, "%-2d", alunosDentro);
+				 sprintf(AlunosFora, "%-2d", alunosFora);
+				 ST7735_WriteString(107,10,AlunosDentro, Font_7x10, WHITE, BLACK);
+				 ST7735_WriteString(86,20, AlunosFora, Font_7x10, WHITE, BLACK);
+				 HAL_Delay(200);
+				 while(BotaoLe1 == 0){
+
+				 }
+
 			 }
 		 }
 		 if(BotaoLe2 == 0){
-			 if (alunosFora < 0){
+			 if (alunosFora > 0){
 				 alunosDentro ++;
 				 alunosFora --;
+				 sprintf(AlunosDentro, "%-2d", alunosDentro);
+				 sprintf(AlunosFora, "%-2d", alunosFora);
+				 ST7735_WriteString(107,10,AlunosDentro, Font_7x10, WHITE, BLACK);
+				 ST7735_WriteString(86,20, AlunosFora, Font_7x10, WHITE, BLACK);
+				 HAL_Delay(200);
+				 while(BotaoLe2 == 0){
+
+				 }
 			 }
 
 		 }
@@ -438,25 +464,44 @@ static void MX_GPIO_Init(void)
  }
  void entrada(void)
  {
+	 limpar;
 	 bool entrandoAlunos = true;
-	 int matricula = 1000;
 	 char matriculaAluno[5];
+	 ST7735_WriteString(0,0,"Aperte o botao para entrar ", Font_7x10, WHITE, BLACK);
 
 	 while(entrandoAlunos){
 		 if(BotaoLe == 0){
+
+			 if ( alunos < alunosMax){
+				 alunos++;
+				 sprintf(matriculaAluno, "%d", matricula);
+				 ST7735_WriteString(0,20,"Bem Vindo, Entrou: ", Font_7x10, WHITE, BLACK);
+				 ST7735_WriteString(127,10,matriculaAluno, Font_7x10, WHITE, BLACK);
+				 matricula++;
+			 }
+			 else {
+		     ST7735_WriteString(0,20,"SALA CHEIA!", Font_7x10, RED, BLACK);
+			 }
 			 HAL_Delay(200);
-			 matricula++;
-			 alunos++;
-			 sprintf(matriculaAluno, "%d", matricula);
+			 while(BotaoLe == 0){
+
+			 }
 
 		 }
 		 if(BotaoLe1 == 0){
 			 entrandoAlunos = false;
-			 ST7735_WriteString(0,0,"Entrou: ", Font_7x10, WHITE, BLACK);
-			 ST7735_WriteString(56,0,matriculaAluno, Font_7x10, WHITE, BLACK);
+			 HAL_Delay(200);
+			 while(BotaoLe1 == 0){
+
+			 }
 		 }
 
 	 }
+	 limpar;
+	 ST7735_WriteString(0,0,"Max de alunos: ", Font_7x10, WHITE, BLACK);
+	 ST7735_WriteString(99,0, AlunosMax, Font_7x10, WHITE, BLACK);
+	 ST7735_WriteString(0,10,"Alunos na sala: ", Font_7x10, WHITE, BLACK);
+	 ST7735_WriteString(0,20,"Alunos fora: ", Font_7x10, WHITE, BLACK);
  }
 
 /* USER CODE END 4 */
