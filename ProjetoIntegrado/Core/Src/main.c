@@ -68,6 +68,7 @@ void digitarsenha(void);
 void configurarAlunos(void);
 void menu(void);
 void entrada(void);
+void relatorio(void);
 
 /* USER CODE END PFP */
 
@@ -122,6 +123,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+
 	  if (iniciou == false)
 	  {
 		  limpar;
@@ -199,7 +201,7 @@ int main(void)
 		  if (digitos == 3)
 		  {
 			  limpar;
-			  if (digitado == senha)
+			  if (digitado == 111)
 			  {
 				  ST7735_WriteString(0,0,"ACESSO LIBERADO", Font_16x26, GREEN, BLACK);
 				  senhaCorreta = true;
@@ -403,23 +405,30 @@ static void MX_GPIO_Init(void)
 	 limpar;
 	 ST7735_WriteString(0,0,"O numero max de alunos: ", Font_7x10, WHITE, BLACK);
 	 ST7735_WriteString(14,10,textoAlunos, Font_7x10, WHITE, BLACK);
+	 HAL_Delay(500);
 
 
  }
  void menu(void)
  {
 	 limpar;
-	 int alunosFora = 0;
 	 int alunosDentro = 0;
-	 int totalEntradas = 0;
-	 int totalSaidas = 0;
-	 int totalRetornos = 0;
+	 int alunosFora = 0;
 	 sprintf(AlunosMax, "%-2d", alunosMax);
+	 sprintf(AlunosDentro, "%-2d", alunosDentro);
+	 sprintf(AlunosFora, "%-2d", alunosFora);
+	 ST7735_WriteString(0,0,"botao 9 e entrada ", Font_7x10, WHITE, BLACK);
+	 ST7735_WriteString(0,10,"botao 10 e saida para agua", Font_7x10, WHITE, BLACK);
+	 ST7735_WriteString(0,20,"botao 11 e retorno para agua", Font_7x10, WHITE, BLACK);
+	 ST7735_WriteString(0,30,"botao 12 e relatorio", Font_7x10, WHITE, BLACK);
 
-	 ST7735_WriteString(0,0,"Max de alunos: ", Font_7x10, WHITE, BLACK);
-	 ST7735_WriteString(99,0, AlunosMax, Font_7x10, WHITE, BLACK);
-	 ST7735_WriteString(0,10,"Alunos na sala: ", Font_7x10, WHITE, BLACK);
-	 ST7735_WriteString(0,20,"Alunos fora: ", Font_7x10, WHITE, BLACK);
+
+	 ST7735_WriteString(0,40,"Max de alunos: ", Font_7x10, WHITE, BLACK);
+	 ST7735_WriteString(99,40, AlunosMax, Font_7x10, WHITE, BLACK);
+	 ST7735_WriteString(0,50,"Alunos na sala: ", Font_7x10, WHITE, BLACK);
+	 ST7735_WriteString(107,50,AlunosDentro, Font_7x10, WHITE, BLACK);
+	 ST7735_WriteString(0,60,"Alunos fora: ", Font_7x10, WHITE, BLACK);
+	 ST7735_WriteString(86,60, AlunosFora, Font_7x10, WHITE, BLACK);
 
 	 while(true){
 		 if(BotaoLe == 0)
@@ -479,7 +488,7 @@ static void MX_GPIO_Init(void)
 	 limpar;
 	 bool entrandoAlunos = true;
 	 char matriculaAluno[5];
-	 ST7735_WriteString(0,0,"Aperte o botao para entrar ", Font_7x10, WHITE, BLACK);
+	 ST7735_WriteString(0,0,"Aperte o botao 9 para entrar ", Font_7x10, WHITE, BLACK);
 
 	 while(entrandoAlunos){
 		 if(BotaoLe == 0){
@@ -493,7 +502,7 @@ static void MX_GPIO_Init(void)
 				 matricula++;
 			 }
 			 else {
-		     ST7735_WriteString(0,20,"SALA CHEIA!", Font_7x10, RED, BLACK);
+		     ST7735_WriteString(0,30,"SalaCheia", Font_16x26, RED, BLACK);
 			 }
 			 HAL_Delay(200);
 			 while(BotaoLe == 0){
@@ -520,11 +529,11 @@ static void MX_GPIO_Init(void)
  void relatorio(void){
 	char texto[10];
 	 limpar;
-	  ST7735_WriteString(8,0,"RELATORIO FINAL", Font_11x18, WHITE, BLACK);
+	  ST7735_WriteString(0,0,"RelatorioFinal", Font_11x18, BLUE, BLACK);
 
 	  sprintf(texto, "%d", totalEntradas);
 	  ST7735_WriteString(0,19,"Total de alunos presentes:", Font_7x10, WHITE, BLACK);
-	  ST7735_WriteString(55,29,texto, Font_7x10, WHITE, BLACK);
+	  ST7735_WriteString(50,29,texto, Font_7x10, WHITE, BLACK);
 
 	  sprintf(texto, "%d", totalSaidas);
 	  ST7735_WriteString(0,39,"Total de saidas:", Font_7x10, WHITE, BLACK);
