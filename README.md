@@ -1,10 +1,10 @@
-# 🏫 Sistema de Controle de Aula — STM32
+# Sistema de Controle de Aula — STM32
 
 Manual de uso do sistema de controle de presença para laboratório, desenvolvido com microcontrolador STM32 e display ST7735.
 
 ---
 
-## 🔘 Mapeamento dos Botões
+## Mapeamento dos Botões
 
 O sistema utiliza 4 botões dispostos em formato direcional:
 
@@ -27,7 +27,7 @@ O sistema utiliza 4 botões dispostos em formato direcional:
 
 ---
 
-## 🔄 Fluxo do Sistema
+## Fluxo do Sistema
 
 ```
 Inicialização
@@ -53,7 +53,7 @@ Sistema reinicia automaticamente
 
 ---
 
-## 📋 Passo a Passo
+## Passo a Passo
 
 ### 1. Inicialização
 
@@ -64,7 +64,7 @@ Pressione o botao para o
 comeco da aula
 ```
 
-➡️ Pressione o **Botão 9 (esquerda)** para iniciar.
+Pressione o **Botão 9 (esquerda)** para iniciar.
 
 ---
 
@@ -108,8 +108,9 @@ Pressione o **Botão 10 (baixo)** repetidamente para selecionar o número deseja
 Aguarde **1 segundo** sem pressionar para confirmar o dígito. Repita para os 3 dígitos.
 
 **Resultado:**
-- ✅ Senha correta → `ACESSO LIBERADO` (verde)
-- ❌ Senha errada → `SENHA INCORRETA, TENTE NOVAMENTE` (vermelho) — tente novamente desde o primeiro dígito
+- Senha correta → `ACESSO LIBERADO` (verde)
+- Senha errada → `SENHA INCORRETA, TENTE NOVAMENTE` (vermelho) — tente novamente desde o primeiro dígito
+- 3 erros consecutivos → sistema bloqueia por **30 segundos** antes de permitir nova tentativa
 
 ---
 
@@ -126,7 +127,7 @@ Alunos: 0
 | Botão 11 (direita) | Decrementar quantidade |
 | Botão 9 (esquerda) | Confirmar |
 
-> ⚠️ Não é possível confirmar com 0 alunos.
+> Não é possível confirmar com 0 alunos.
 
 ---
 
@@ -153,9 +154,9 @@ A barra de ocupação é exibida em verde e cresce proporcionalmente conforme os
 | Botão 11 (direita) | Registrar retorno do aluno |
 | Botão 12 (cima) | Encerrar aula e exibir relatório |
 
-> ⚠️ Máximo de **3 alunos** fora da sala simultaneamente.  
-> ⚠️ Não é possível registrar saída se não houver alunos na sala.  
-> ⚠️ Não é possível registrar retorno se não houver alunos fora.
+> Máximo de **3 alunos** fora da sala simultaneamente — valor configurável no código.  
+> Não é possível registrar saída se não houver alunos na sala.  
+> Não é possível registrar retorno se não houver alunos fora.
 
 ---
 
@@ -174,7 +175,7 @@ Bem Vindo, Entrou: XXXX  ← matrícula
 
 Cada aluno recebe uma matrícula sequencial a partir de **1000**.
 
-> ⚠️ Se a sala estiver cheia, o sistema exibe `SalaCheia` em vermelho e bloqueia novas entradas.
+> Se a sala estiver cheia, o sistema exibe `SalaCheia` em vermelho e bloqueia novas entradas.
 
 ---
 
@@ -187,23 +188,29 @@ RelatorioFinal
 Total de alunos presentes: XX
 Total de saidas:           XX
 Total de retornos:         XX
+Tempo da aula:          MM:SS
 ```
 
 O relatório fica exibido por **2 minutos** automaticamente. Após esse tempo, o sistema se reinicia completamente, voltando à tela inicial pronto para uma nova aula.
 
 ---
-## 🎥 Vídeo de Apresentação
+
+## Vídeo de Apresentação
+
 A ser colocado
 
 ---
 
-## 🧠 Decisões de Implementação
+## Decisões de Implementação
 
 ### Estrutura do código
 O código foi organizado em funções separadas para cada etapa do fluxo (`inicio`, `digitarsenha`, `configurarAlunos`, `menu`, `entrada`, `relatorio`), facilitando a leitura e manutenção.
 
 ### Sistema de senha
 A senha é gerada aleatoriamente com `rand()` usando `HAL_GetTick()` como semente, garantindo que seja diferente a cada execução. A senha fica visível apenas via inspeção de variável no debugger, sem ser exibida no display, conforme especificado no projeto.
+
+### Bloqueio por tentativas
+Após 3 erros consecutivos na digitação da senha, o sistema exibe uma mensagem de bloqueio e aguarda 30 segundos antes de permitir novas tentativas, protegendo o sistema contra acesso não autorizado.
 
 ### Debounce dos botões
 Para evitar leituras duplicadas, após cada acionamento de botão foi aplicado `HAL_Delay(200)` seguido de espera pelo soltar do botão (`while(BotaoLe == 0)`), garantindo uma leitura por pressão.
@@ -214,6 +221,9 @@ O limite de 3 alunos fora foi implementado via variável local `alunosFora` com 
 ### Barra de ocupação
 A barra de progresso foi implementada com `ST7735_FillRectangle` em cor verde, com borda branca ao redor para delimitar visualmente o espaço total disponível. A barra cresce proporcionalmente conforme os alunos entram, dando feedback visual imediato ao professor.
 
+### Tempo de aula
+O tempo de aula é calculado salvando o tick do HAL no início do `menu()` e subtraindo do tick atual no momento do relatório, exibindo o resultado no formato `MM:SS`.
+
 ### Matrícula via "leitor facial"
 O enunciado pedia para simular um leitor facial que envia a matrícula do aluno. Interpretamos isso como uma variável interna incrementada automaticamente a cada entrada, começando em 1000, simulando o recebimento de uma matrícula externa.
 
@@ -222,10 +232,9 @@ Ao pressionar o Botão 12, o sistema exibe o relatório final por 2 minutos e re
 
 ---
 
-## 👥 Integrantes do Grupo
+## Integrantes do Grupo
 
 - Layon Rubens Motta de Freitas
 - Marcelo Vitor da Silva Pereira
-
 
 ---
