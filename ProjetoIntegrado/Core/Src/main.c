@@ -53,7 +53,6 @@ SPI_HandleTypeDef hspi1;
 int alunosMax = 0, alunos = 0;
 int matricula = 1000;
 int totalEntradas = 0, totalSaidas = 0, totalRetornos = 0;
-bool configurandoAlunos =false;
 char AlunosFora[4] = "0" , AlunosDentro[4] =  "0", AlunosMax[4] =  "0";
 
 /* USER CODE END PV */
@@ -69,6 +68,7 @@ void configurarAlunos(void);
 void menu(void);
 void entrada(void);
 void relatorio(void);
+void barra(int dentro, int maximo);
 
 /* USER CODE END PFP */
 
@@ -222,6 +222,21 @@ int main(void)
 			  configurarAlunos();
 			  menu();
 
+
+			  senhaCorreta = false;
+			  senhaGerada = false;
+			  digitandoSenha = false;
+			  digitado = 0;
+			  digitos = 0;
+			  cliques = 0;
+			  iniciou = false;
+			  alunosMax = 0;
+			  alunos = 0;
+			  matricula = 1000;
+			  totalEntradas = 0;
+			  totalSaidas = 0;
+			  totalRetornos = 0;
+
 		  }
 
 
@@ -368,6 +383,7 @@ static void MX_GPIO_Init(void)
 
  void configurarAlunos(void)
  {
+	 bool configurandoAlunos =false;
 	 char textoAlunos[20];
 
 	 limpar;
@@ -417,18 +433,13 @@ static void MX_GPIO_Init(void)
 	 sprintf(AlunosMax, "%-2d", alunosMax);
 	 sprintf(AlunosDentro, "%-2d", alunosDentro);
 	 sprintf(AlunosFora, "%-2d", alunosFora);
-	 ST7735_WriteString(0,0,"botao 9 e entrada ", Font_7x10, WHITE, BLACK);
-	 ST7735_WriteString(0,10,"botao 10 e saida para agua", Font_7x10, WHITE, BLACK);
-	 ST7735_WriteString(0,20,"botao 11 e retorno para agua", Font_7x10, WHITE, BLACK);
-	 ST7735_WriteString(0,30,"botao 12 e relatorio", Font_7x10, WHITE, BLACK);
 
-
-	 ST7735_WriteString(0,40,"Max de alunos: ", Font_7x10, WHITE, BLACK);
-	 ST7735_WriteString(99,40, AlunosMax, Font_7x10, WHITE, BLACK);
-	 ST7735_WriteString(0,50,"Alunos na sala: ", Font_7x10, WHITE, BLACK);
-	 ST7735_WriteString(107,50,AlunosDentro, Font_7x10, WHITE, BLACK);
-	 ST7735_WriteString(0,60,"Alunos fora: ", Font_7x10, WHITE, BLACK);
-	 ST7735_WriteString(86,60, AlunosFora, Font_7x10, WHITE, BLACK);
+	 ST7735_WriteString(0,0,"Max de alunos: ", Font_7x10, WHITE, BLACK);
+	 ST7735_WriteString(99,0, AlunosMax, Font_7x10, WHITE, BLACK);
+	 ST7735_WriteString(0,10,"Alunos na sala: ", Font_7x10, WHITE, BLACK);
+	 ST7735_WriteString(107,10,AlunosDentro, Font_7x10, WHITE, BLACK);
+	 ST7735_WriteString(0,20,"Alunos fora: ", Font_7x10, WHITE, BLACK);
+	 ST7735_WriteString(86,20, AlunosFora, Font_7x10, WHITE, BLACK);
 
 	 while(true){
 		 if(BotaoLe == 0)
@@ -449,10 +460,14 @@ static void MX_GPIO_Init(void)
 				 alunosFora ++;
 				 alunosDentro --;
 				 totalSaidas++;
+				 barra(alunosDentro, alunosMax);
+
 				 sprintf(AlunosDentro, "%-2d", alunosDentro);
 				 sprintf(AlunosFora, "%-2d", alunosFora);
+
 				 ST7735_WriteString(107,10,AlunosDentro, Font_7x10, WHITE, BLACK);
 				 ST7735_WriteString(86,20, AlunosFora, Font_7x10, WHITE, BLACK);
+
 				 HAL_Delay(200);
 				 while(BotaoLe1 == 0){
 				 }
@@ -464,10 +479,14 @@ static void MX_GPIO_Init(void)
 				 alunosDentro ++;
 				 alunosFora --;
 				 totalRetornos++;
+				 barra(alunosDentro, alunosMax);
+
 				 sprintf(AlunosDentro, "%-2d", alunosDentro);
 				 sprintf(AlunosFora, "%-2d", alunosFora);
+
 				 ST7735_WriteString(107,10,AlunosDentro, Font_7x10, WHITE, BLACK);
 				 ST7735_WriteString(86,20, AlunosFora, Font_7x10, WHITE, BLACK);
+
 				 HAL_Delay(200);
 				 while(BotaoLe2 == 0){
 				 }
@@ -477,6 +496,9 @@ static void MX_GPIO_Init(void)
 		 if (BotaoLe3 == 0){
 
 			relatorio();
+			break;
+
+
 
 		 }
 
@@ -497,6 +519,7 @@ static void MX_GPIO_Init(void)
 				 alunos++;
 				 totalEntradas++;
 				 sprintf(matriculaAluno, "%d", matricula);
+				 barra(alunos, alunosMax);
 				 ST7735_WriteString(0,20,"Bem Vindo, Entrou: ", Font_7x10, WHITE, BLACK);
 				 ST7735_WriteString(127,20,matriculaAluno, Font_7x10, WHITE, BLACK);
 				 matricula++;
@@ -527,23 +550,37 @@ static void MX_GPIO_Init(void)
  }
 
  void relatorio(void){
+
 	char texto[10];
 	 limpar;
-	  ST7735_WriteString(0,0,"RelatorioFinal", Font_11x18, BLUE, BLACK);
+		ST7735_WriteString(0,0,"RelatorioFinal", Font_11x18, BLUE, BLACK);
 
-	  sprintf(texto, "%d", totalEntradas);
-	  ST7735_WriteString(0,19,"Total de alunos presentes:", Font_7x10, WHITE, BLACK);
-	  ST7735_WriteString(50,29,texto, Font_7x10, WHITE, BLACK);
+		sprintf(texto, "%d", totalEntradas);
+		ST7735_WriteString(0,19,"Total de alunos presentes:", Font_7x10, WHITE, BLACK);
+		ST7735_WriteString(50,29,texto, Font_7x10, WHITE, BLACK);
 
-	  sprintf(texto, "%d", totalSaidas);
-	  ST7735_WriteString(0,39,"Total de saidas:", Font_7x10, WHITE, BLACK);
-	  ST7735_WriteString(113,39,texto, Font_7x10, WHITE, BLACK);
+		sprintf(texto, "%d", totalSaidas);
+		ST7735_WriteString(0,39,"Total de saidas:", Font_7x10, WHITE, BLACK);
+		ST7735_WriteString(113,39,texto, Font_7x10, WHITE, BLACK);
 
-	sprintf(texto, "%d", totalRetornos);
-	ST7735_WriteString(0,49,"Total de retornos:", Font_7x10, WHITE, BLACK);
-	ST7735_WriteString(120,49,texto, Font_7x10, WHITE, BLACK);
+		sprintf(texto, "%d", totalRetornos);
+		ST7735_WriteString(0,49,"Total de retornos:", Font_7x10, WHITE, BLACK);
+		ST7735_WriteString(120,49,texto, Font_7x10, WHITE, BLACK);
 
+		HAL_Delay(120000);
+ }
 
+ void barra(int dentro, int maximo) {
+     int larguraTotal = 120;
+     int larguraBarra = (dentro * larguraTotal) / maximo;
+
+     	ST7735_FillRectangle(0, 80, larguraTotal, 10, BLACK);
+        ST7735_FillRectangle(0, 80, larguraBarra, 10, GREEN);
+
+        ST7735_FillRectangle(0, 80, 128, 1, WHITE);
+        ST7735_FillRectangle(0, 90, 128, 1, WHITE);
+        ST7735_FillRectangle(0, 80, 1, 10, WHITE);
+        ST7735_FillRectangle(127, 80, 1, 10, WHITE);
  }
 
 /* USER CODE END 4 */
