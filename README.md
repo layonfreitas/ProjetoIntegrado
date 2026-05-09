@@ -1,6 +1,6 @@
 # 🏫 Sistema de Controle de Aula — STM32
 
-Manual de uso do sistema embarcado de controle de presença para laboratório, desenvolvido com microcontrolador STM32 e display ST7735.
+Manual de uso do sistema de controle de presença para laboratório, desenvolvido com microcontrolador STM32 e display ST7735.
 
 ---
 
