@@ -54,6 +54,7 @@ int alunosMax = 0, alunos = 0;
 int matricula = 1000;
 int totalEntradas = 0, totalSaidas = 0, totalRetornos = 0;
 char AlunosFora[4] = "0" , AlunosDentro[4] =  "0", AlunosMax[4] =  "0";
+uint32_t inicioAula;
 
 /* USER CODE END PV */
 
@@ -89,7 +90,7 @@ int main(void)
 	  bool senhaGerada = false;
 	  bool digitandoSenha = false;
 	  bool senhaCorreta = false;
-	  int senha, cliques = 0, digitado = 0, digitos = 0;
+	  int senha, cliques = 0, digitado = 0, digitos = 0, tentativas = 0;
 	  uint32_t ultimoClique = 0;
 
   /* USER CODE END 1 */
@@ -201,7 +202,7 @@ int main(void)
 		  if (digitos == 3)
 		  {
 			  limpar;
-			  if (digitado == 111)
+			  if (digitado == senha)
 			  {
 				  ST7735_WriteString(0,0,"ACESSO LIBERADO", Font_16x26, GREEN, BLACK);
 				  senhaCorreta = true;
@@ -211,9 +212,23 @@ int main(void)
 			  }
 			  else
 			  {
+				  tentativas ++;
+				  if(tentativas == 3){
+					  ST7735_WriteString(0,0,"Voce errou a senha varias vezes, espere 30 segundos", Font_11x18, RED, BLACK);
+					  HAL_Delay(30000);
+					  ST7735_WriteString(0,0,"SENHA INCORRETA, TENTE NOVAMENTE", Font_11x18, RED, BLACK);
+					  tentativas = 0;
+					  digitado = 0;
+				      digitos = 0;
+					  limpar;
+				  }
+				  else {
 				  ST7735_WriteString(0,0,"SENHA INCORRETA, TENTE NOVAMENTE", Font_11x18, RED, BLACK);
 				  digitado = 0;
 				  digitos = 0;
+				  }
+
+
 			  }
 		  }
 
@@ -434,12 +449,15 @@ static void MX_GPIO_Init(void)
 	 sprintf(AlunosDentro, "%-2d", alunosDentro);
 	 sprintf(AlunosFora, "%-2d", alunosFora);
 
+	 inicioAula = HAL_GetTick();
+
 	 ST7735_WriteString(0,0,"Max de alunos: ", Font_7x10, WHITE, BLACK);
 	 ST7735_WriteString(99,0, AlunosMax, Font_7x10, WHITE, BLACK);
 	 ST7735_WriteString(0,10,"Alunos na sala: ", Font_7x10, WHITE, BLACK);
 	 ST7735_WriteString(107,10,AlunosDentro, Font_7x10, WHITE, BLACK);
 	 ST7735_WriteString(0,20,"Alunos fora: ", Font_7x10, WHITE, BLACK);
 	 ST7735_WriteString(86,20, AlunosFora, Font_7x10, WHITE, BLACK);
+
 
 	 while(true){
 		 if(BotaoLe == 0)
@@ -553,6 +571,12 @@ static void MX_GPIO_Init(void)
 
 	char texto[10];
 	 limpar;
+
+	 uint32_t duracaoMs = HAL_GetTick() - inicioAula;
+	 uint32_t minutos = duracaoMs / 60000;
+	 uint32_t segundos = (duracaoMs % 60000) / 1000;
+
+
 		ST7735_WriteString(0,0,"RelatorioFinal", Font_11x18, BLUE, BLACK);
 
 		sprintf(texto, "%d", totalEntradas);
@@ -566,6 +590,10 @@ static void MX_GPIO_Init(void)
 		sprintf(texto, "%d", totalRetornos);
 		ST7735_WriteString(0,49,"Total de retornos:", Font_7x10, WHITE, BLACK);
 		ST7735_WriteString(120,49,texto, Font_7x10, WHITE, BLACK);
+
+		sprintf(texto, "%02ld:%02ld", minutos, segundos);
+		ST7735_WriteString(0,59,"Tempo da aula:", Font_7x10, WHITE, BLACK);
+		ST7735_WriteString(99,59,texto, Font_7x10, WHITE, BLACK);
 
 		HAL_Delay(120000);
  }
