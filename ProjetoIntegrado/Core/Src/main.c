@@ -22,9 +22,9 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "st7735\st7735.h"
-#include <stdlib.h>
-#include <stdio.h>
+#include "st7735\st7735.h" // display
+#include <stdlib.h> // rand
+#include <stdio.h> // sprintf
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -125,12 +125,14 @@ int main(void)
   while (1)
   {
 
+
 	  if (iniciou == false)
 	  {
 		  limpar;
 		  inicio();
 		  iniciou = true;
 	  }
+
 
 	  if (BotaoLe == 0 && senhaGerada == false)
 	      {
@@ -150,7 +152,6 @@ int main(void)
 		  HAL_Delay(200);
 		  while(BotaoLe1 == 0)
 		  {
-
 		  }
 		  switch(cliques){
 		      case 1:
@@ -194,6 +195,9 @@ int main(void)
 
 
 	  if (cliques > 0 && (HAL_GetTick() - ultimoClique) > 1000){
+		  if (cliques == 10){
+			  cliques = 0;
+		  }
 		  digitado = digitado * 10 + cliques;
 		  digitos++;
 
@@ -216,17 +220,20 @@ int main(void)
 				  if(tentativas == 3){
 					  ST7735_WriteString(0,0,"Voce errou a senha varias vezes, espere 30 segundos", Font_11x18, RED, BLACK);
 					  HAL_Delay(30000);
-					  ST7735_WriteString(0,0,"SENHA INCORRETA, TENTE NOVAMENTE", Font_11x18, RED, BLACK);
 					  tentativas = 0;
 					  digitado = 0;
 				      digitos = 0;
-					  limpar;
 				  }
 				  else {
 				  ST7735_WriteString(0,0,"SENHA INCORRETA, TENTE NOVAMENTE", Font_11x18, RED, BLACK);
+				  HAL_Delay(500);
 				  digitado = 0;
 				  digitos = 0;
 				  }
+
+				  limpar;
+				  digitarsenha();
+
 
 
 			  }
@@ -398,13 +405,13 @@ static void MX_GPIO_Init(void)
 
  void configurarAlunos(void)
  {
-	 bool configurandoAlunos =false;
-	 char textoAlunos[20];
+	 bool configurandoAlunos =true;
+	 char textoAlunos[8];
 
 	 limpar;
 	 ST7735_WriteString(0,0,"Digite a quantidade de alunos ", Font_7x10, WHITE, BLACK);
 
-	 while(configurandoAlunos == false){
+	 while(configurandoAlunos == true){
 
 		 if (BotaoLe1 == 0)
 		 {
@@ -423,7 +430,7 @@ static void MX_GPIO_Init(void)
 		 else if (BotaoLe == 0 && alunosMax > 0)
 		 {
 
-			 configurandoAlunos = true;
+			 configurandoAlunos = false;
 			 HAL_Delay(200);
 		 }
 
@@ -436,7 +443,7 @@ static void MX_GPIO_Init(void)
 	 limpar;
 	 ST7735_WriteString(0,0,"O numero max de alunos: ", Font_7x10, WHITE, BLACK);
 	 ST7735_WriteString(14,10,textoAlunos, Font_7x10, WHITE, BLACK);
-	 HAL_Delay(500);
+	 HAL_Delay(1000);
 
 
  }
@@ -458,18 +465,20 @@ static void MX_GPIO_Init(void)
 	 ST7735_WriteString(0,20,"Alunos fora: ", Font_7x10, WHITE, BLACK);
 	 ST7735_WriteString(86,20, AlunosFora, Font_7x10, WHITE, BLACK);
 
+	 barra(alunosDentro, alunosMax);
+
 
 	 while(true){
 		 if(BotaoLe == 0)
 		 {
 			 entrada();
-			 alunosDentro = alunos;
-			 sprintf(AlunosDentro, "%-2d", alunosDentro);
-			 HAL_Delay(200);
-			 ST7735_WriteString(107,10,AlunosDentro, Font_7x10, WHITE, BLACK);
-			 while(BotaoLe == 0){
+			 inicioAula = HAL_GetTick();
+			 alunosDentro = alunos - alunosFora;
 
-			 }
+			 barra(alunosDentro, alunosMax);
+			 sprintf(AlunosDentro, "%-2d", alunosDentro);
+			 ST7735_WriteString(107,10,AlunosDentro, Font_7x10, WHITE, BLACK);
+			 ST7735_WriteString(86,20, AlunosFora, Font_7x10, WHITE, BLACK);
 
 		 }
 		 if(BotaoLe1 == 0){
@@ -581,7 +590,7 @@ static void MX_GPIO_Init(void)
 
 		sprintf(texto, "%d", totalEntradas);
 		ST7735_WriteString(0,19,"Total de alunos presentes:", Font_7x10, WHITE, BLACK);
-		ST7735_WriteString(50,29,texto, Font_7x10, WHITE, BLACK);
+		ST7735_WriteString(45,29,texto, Font_7x10, WHITE, BLACK);
 
 		sprintf(texto, "%d", totalSaidas);
 		ST7735_WriteString(0,39,"Total de saidas:", Font_7x10, WHITE, BLACK);
@@ -589,7 +598,7 @@ static void MX_GPIO_Init(void)
 
 		sprintf(texto, "%d", totalRetornos);
 		ST7735_WriteString(0,49,"Total de retornos:", Font_7x10, WHITE, BLACK);
-		ST7735_WriteString(120,49,texto, Font_7x10, WHITE, BLACK);
+		ST7735_WriteString(122,49,texto, Font_7x10, WHITE, BLACK);
 
 		sprintf(texto, "%02ld:%02ld", minutos, segundos);
 		ST7735_WriteString(0,59,"Tempo da aula:", Font_7x10, WHITE, BLACK);
@@ -599,16 +608,19 @@ static void MX_GPIO_Init(void)
  }
 
  void barra(int dentro, int maximo) {
-     int larguraTotal = 120;
-     int larguraBarra = (dentro * larguraTotal) / maximo;
+	 	 int larguraTotal = 120;
+	     int larguraBarra = (dentro * larguraTotal) / maximo;
 
-     	ST7735_FillRectangle(0, 80, larguraTotal, 10, BLACK);
-        ST7735_FillRectangle(0, 80, larguraBarra, 10, GREEN);
 
-        ST7735_FillRectangle(0, 80, 128, 1, WHITE);
-        ST7735_FillRectangle(0, 90, 128, 1, WHITE);
-        ST7735_FillRectangle(0, 80, 1, 10, WHITE);
-        ST7735_FillRectangle(127, 80, 1, 10, WHITE);
+	     ST7735_FillRectangle(11, 61, larguraTotal, 8, BLACK);
+
+	     ST7735_FillRectangle(11, 61, larguraBarra, 8, GREEN);
+
+
+	     ST7735_FillRectangle(10, 60, 122, 1, WHITE);
+	     ST7735_FillRectangle(10, 69, 122, 1, WHITE);
+	     ST7735_FillRectangle(10, 60, 1, 10, WHITE);
+	     ST7735_FillRectangle(131, 60, 1, 10, WHITE);
  }
 
 /* USER CODE END 4 */
