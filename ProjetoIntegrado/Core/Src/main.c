@@ -140,7 +140,7 @@ int main(void)
 		  digitarsenha();
 		  digitandoSenha = true;
 		  srand(HAL_GetTick());
-		  senha = (rand() % 900) + 100;
+		  senha = (rand() % 90000) + 100000;
 		  senhaGerada = true;
 	      }
 
@@ -203,7 +203,7 @@ int main(void)
 
 		  cliques = 0;
 
-		  if (digitos == 3)
+		  if (digitos == 6)
 		  {
 			  limpar;
 			  if (digitado == senha)
@@ -258,6 +258,7 @@ int main(void)
 			  totalEntradas = 0;
 			  totalSaidas = 0;
 			  totalRetornos = 0;
+			  tentativas = 0;
 
 		  }
 
@@ -453,10 +454,9 @@ static void MX_GPIO_Init(void)
 	 int alunosDentro = 0;
 	 int alunosFora = 0;
 	 sprintf(AlunosMax, "%-2d", alunosMax);
-	 sprintf(AlunosDentro, "%-2d", alunosDentro);
-	 sprintf(AlunosFora, "%-2d", alunosFora);
+	 sprintf(AlunosDentro, "%d", alunosDentro);
+	 sprintf(AlunosFora, "%d", alunosFora);
 
-	 inicioAula = HAL_GetTick();
 
 	 ST7735_WriteString(0,0,"Max de alunos: ", Font_7x10, WHITE, BLACK);
 	 ST7735_WriteString(99,0, AlunosMax, Font_7x10, WHITE, BLACK);
@@ -495,9 +495,22 @@ static void MX_GPIO_Init(void)
 				 ST7735_WriteString(107,10,AlunosDentro, Font_7x10, WHITE, BLACK);
 				 ST7735_WriteString(86,20, AlunosFora, Font_7x10, WHITE, BLACK);
 
-				 HAL_Delay(200);
+			 }
+			 else if(alunosDentro == 0){
+				 ST7735_WriteString(0,30, "NAO HA NENHUM ALUNO NA SALA", Font_7x10, RED, BLACK);
+				 HAL_Delay(1000);
+				 ST7735_FillRectangle(0, 30, 160, 10, BLACK);
+				 ST7735_FillRectangle(0, 40, 160, 10, BLACK);
+			 }
+			 else if (alunosFora == 3){
+				 ST7735_WriteString(0,30, "TEM 3 ALUNOS FORA. ESPERE ", Font_7x10, RED, BLACK);
+				 HAL_Delay(1000);
+				 ST7735_FillRectangle(0, 30, 160, 10, BLACK);
+				 ST7735_FillRectangle(0, 40, 160, 10, BLACK);
+			 }
+		 	 	 HAL_Delay(200);
 				 while(BotaoLe1 == 0){
-				 }
+
 
 			 }
 		 }
@@ -513,14 +526,20 @@ static void MX_GPIO_Init(void)
 
 				 ST7735_WriteString(107,10,AlunosDentro, Font_7x10, WHITE, BLACK);
 				 ST7735_WriteString(86,20, AlunosFora, Font_7x10, WHITE, BLACK);
-
+			 }
+			 else{
+				 ST7735_WriteString(0,30,"NAO HA ALUNOS FORA DA SALA", Font_7x10, RED, BLACK);
+				 HAL_Delay(1000);
+				 ST7735_FillRectangle(0, 30, 160, 10, BLACK);
+				 ST7735_FillRectangle(0, 40, 160, 10, BLACK);
+			 }
 				 HAL_Delay(200);
 				 while(BotaoLe2 == 0){
-				 }
+
 			 }
 
 		 }
-		 if (BotaoLe3 == 0){
+		 if (BotaoLe3 == 0 && BotaoLe2 == 0){
 
 			relatorio();
 			break;
@@ -554,9 +573,9 @@ static void MX_GPIO_Init(void)
 			 else {
 		     ST7735_WriteString(0,30,"SalaCheia", Font_16x26, RED, BLACK);
 			 }
+
 			 HAL_Delay(200);
 			 while(BotaoLe == 0){
-
 			 }
 
 		 }
@@ -608,6 +627,8 @@ static void MX_GPIO_Init(void)
  }
 
  void barra(int dentro, int maximo) {
+
+	 if (maximo > 0){
 	 	 int larguraTotal = 120;
 	     int larguraBarra = (dentro * larguraTotal) / maximo;
 
@@ -621,6 +642,7 @@ static void MX_GPIO_Init(void)
 	     ST7735_FillRectangle(10, 69, 122, 1, WHITE);
 	     ST7735_FillRectangle(10, 60, 1, 10, WHITE);
 	     ST7735_FillRectangle(131, 60, 1, 10, WHITE);
+	 }
  }
 
 /* USER CODE END 4 */
