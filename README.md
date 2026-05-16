@@ -76,13 +76,13 @@ O sistema exibirá:
 Bem vindo, Digite a sua senha:
 ```
 
-Uma senha de **3 dígitos** é gerada automaticamente e deve ser visualizada pelo professor via debugger no STM32CubeIDE. Siga os passos:
+Uma senha de **6 dígitos** é gerada automaticamente e deve ser visualizada pelo professor via debugger no STM32CubeIDE. Siga os passos:
 
 1. Conecte o STM32 ao computador via cabo ST-Link
 2. No STM32CubeIDE, clique no ícone de **bug** (🐛) para iniciar o modo debug
 3. Coloque um **breakpoint** clicando na barra lateral na linha da geração da senha:
 ```c
-senha = (rand() % 900) + 100;  // ← clique aqui para o breakpoint
+senha = (rand() % 900000) + 100000;  // ← clique aqui para o breakpoint
 ```
 4. Pressione **F8** para rodar até o breakpoint
 5. Na aba **Variables** (canto inferior esquerdo), localize a variável `senha` — o valor exibido é a senha gerada
