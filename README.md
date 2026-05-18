@@ -21,9 +21,9 @@ O sistema utiliza 4 botões dispostos em formato direcional:
 | Botão | Posição | Função geral |
 |-------|---------|--------------|
 | Botão 9  | Esquerda | Confirmar / Entrar |
-| Botão 10 | Baixo    | Incrementar / Digitar / Sair |
-| Botão 11 | Direita  | Decrementar / Retorno de aluno |
-| Botão 12 | Cima     | Abrir relatório final |
+| Botão 10 | Baixo    | Incrementar / Digitar / Registrar saída |
+| Botão 11 | Direita  | Decrementar / Registrar retorno de aluno |
+| Botão 12 | Cima     | — |
 
 ---
 
@@ -36,7 +36,7 @@ Inicialização
 Tela de início → Pressione Botão 9
      │
      ▼
-Digite a senha (3 dígitos via Botão 10)
+Digite a senha (6 dígitos via Botão 10)
      │
      ▼
 Configurar número máximo de alunos
@@ -82,7 +82,7 @@ Uma senha de **6 dígitos** é gerada automaticamente e deve ser visualizada pel
 2. No STM32CubeIDE, clique no ícone de **bug** (🐛) para iniciar o modo debug
 3. Coloque um **breakpoint** clicando na barra lateral na linha da geração da senha:
 ```c
-senha = (rand() % 900000) + 100000;  // ← clique aqui para o breakpoint
+senha = (rand() % 90000) + 100000;  // ← clique aqui para o breakpoint
 ```
 4. Pressione **F8** para rodar até o breakpoint
 5. Na aba **Variables** (canto inferior esquerdo), localize a variável `senha` — o valor exibido é a senha gerada
@@ -105,7 +105,7 @@ Pressione o **Botão 10 (baixo)** repetidamente para selecionar o número deseja
 | 9 | 9 |
 | 10 | 0 |
 
-Aguarde **1 segundo** sem pressionar para confirmar o dígito. Repita para os 3 dígitos.
+Aguarde **1 segundo** sem pressionar para confirmar o dígito. Repita para os 6 dígitos.
 
 **Resultado:**
 - Senha correta → `ACESSO LIBERADO` (verde)
@@ -152,7 +152,7 @@ A barra de ocupação é exibida em verde e cresce proporcionalmente conforme os
 | Botão 9 (esquerda) | Abrir tela de entrada de alunos |
 | Botão 10 (baixo) | Registrar saída (banheiro/água) |
 | Botão 11 (direita) | Registrar retorno do aluno |
-| Botão 12 (cima) | Encerrar aula e exibir relatório |
+| Botão 11 + Botão 12 simultaneamente | Encerrar aula e exibir relatório |
 
 > Máximo de **3 alunos** fora da sala simultaneamente — valor configurável no código.  
 > Não é possível registrar saída se não houver alunos na sala.  
@@ -173,7 +173,7 @@ Bem Vindo, Entrou: XXXX  ← matrícula
 | Botão 9 (esquerda) | Registrar entrada de um aluno |
 | Botão 10 (baixo) | Voltar ao menu principal |
 
-Cada aluno recebe uma matrícula sequencial a partir de **1000**.
+Cada aluno recebe uma matrícula sequencial a partir de **1000**. O timer da aula começa a contar a partir do momento em que a tela de entrada é aberta pela primeira vez.
 
 > Se a sala estiver cheia, o sistema exibe `SalaCheia` em vermelho e bloqueia novas entradas.
 
@@ -181,7 +181,7 @@ Cada aluno recebe uma matrícula sequencial a partir de **1000**.
 
 ### 6. Relatório Final
 
-Pressione o **Botão 12 (cima)** no menu principal para encerrar a aula e exibir o relatório:
+Pressione **Botão 11 + Botão 12 simultaneamente** no menu principal para encerrar a aula e exibir o relatório:
 
 ```
 RelatorioFinal
@@ -207,7 +207,7 @@ A ser colocado
 O código foi organizado em funções separadas para cada etapa do fluxo (`inicio`, `digitarsenha`, `configurarAlunos`, `menu`, `entrada`, `relatorio`), facilitando a leitura e manutenção.
 
 ### Sistema de senha
-A senha é gerada aleatoriamente com `rand()` usando `HAL_GetTick()` como semente, garantindo que seja diferente a cada execução. A senha fica visível apenas via inspeção de variável no debugger, sem ser exibida no display, conforme especificado no projeto.
+A senha de 6 dígitos é gerada aleatoriamente com `rand()` usando `HAL_GetTick()` como semente, garantindo que seja diferente a cada execução. A senha fica visível apenas via inspeção de variável no debugger, sem ser exibida no display, conforme especificado no projeto.
 
 ### Bloqueio por tentativas
 Após 3 erros consecutivos na digitação da senha, o sistema exibe uma mensagem de bloqueio e aguarda 30 segundos antes de permitir novas tentativas, protegendo o sistema contra acesso não autorizado.
@@ -222,13 +222,13 @@ O limite de 3 alunos fora foi implementado via variável local `alunosFora` com 
 A barra de progresso foi implementada com `ST7735_FillRectangle` em cor verde, com borda branca ao redor para delimitar visualmente o espaço total disponível. A barra cresce proporcionalmente conforme os alunos entram, dando feedback visual imediato ao professor.
 
 ### Tempo de aula
-O tempo de aula é calculado salvando o tick do HAL no início do `menu()` e subtraindo do tick atual no momento do relatório, exibindo o resultado no formato `MM:SS`.
+O tempo de aula começa a ser contado no momento em que a tela de entrada de alunos é aberta pela primeira vez (via `inicioAula = HAL_GetTick()` dentro de `menu()`). O relatório calcula a diferença entre esse valor e o tick atual, exibindo o resultado no formato `MM:SS`.
 
 ### Matrícula via "leitor facial"
 O enunciado pedia para simular um leitor facial que envia a matrícula do aluno. Interpretamos isso como uma variável interna incrementada automaticamente a cada entrada, começando em 1000, simulando o recebimento de uma matrícula externa.
 
 ### Encerramento e reinício
-Ao pressionar o Botão 12, o sistema exibe o relatório final por 2 minutos e reinicia automaticamente, zerando todas as variáveis para uma nova aula, sem necessidade de desligar o equipamento.
+Ao pressionar Botão 11 + Botão 12 simultaneamente, o sistema exibe o relatório final por 2 minutos e reinicia automaticamente, zerando todas as variáveis para uma nova aula, sem necessidade de desligar o equipamento.
 
 ---
 
