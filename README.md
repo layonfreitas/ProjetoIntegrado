@@ -197,7 +197,7 @@ O relatório fica exibido por **2 minutos** automaticamente. Após esse tempo, o
 
 ## Vídeo de Apresentação
 
-[![Vídeo de Apresentação](https://img.youtube.com/vi/B5gMoBTCBUY/0.jpg)](https://www.youtube.com/watch?v=B5gMoBTCBUY)
+[Assistir no YouTube](https://youtu.be/B5gMoBTCBUY)
 
 ---
 
